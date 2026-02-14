@@ -1,0 +1,47 @@
+Package: ciftier
+Type: Package
+Title: Read and Write CIFTI-2 Neuroimaging Files
+Version: 0.1.0
+Authors@R: c(
+    person(c("Bradley", "R"), "Buchsbaum", role = c("aut", "cre", "cph"),
+           email = "brad.buchsbaum@gmail.com"))
+Description: Pure R implementation of CIFTI-2 format I/O for grayordinate
+    neuroimaging data. Reads and writes dense timeseries (.dtseries.nii),
+    dense scalars (.dscalar.nii), and dense labels (.dlabel.nii) files
+    without requiring external tools such as Connectome Workbench. Provides
+    S4 classes mirroring the CIFTI-2 XML schema, user-friendly axis
+    abstractions, and optional integration with 'neuroim2' and 'neurosurf'
+    for spatially-aware brain imaging objects.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.1.0)
+Imports:
+    methods,
+    xml2,
+    RNifti
+Suggests:
+    Matrix,
+    neuroim2,
+    neurosurf,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+Collate:
+    'constants.R'
+    'all_generic.R'
+    'all_class.R'
+    'utils.R'
+    'cifti_xml.R'
+    'cifti_axis.R'
+    'cifti_axis_methods.R'
+    'cifti_image.R'
+    'cifti_io.R'
+    'cifti_intent.R'
+    'integration.R'
+    'zzz.R'
+RoxygenNote: 7.3.3
+Config/testthat/edition: 3
+URL: https://github.com/bbuchsbaum/ciftier
+BugReports: https://github.com/bbuchsbaum/ciftier/issues
