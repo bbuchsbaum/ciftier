@@ -79,3 +79,16 @@ setGeneric("named_maps", function(x, ...) standardGeneric("named_maps"))
 #' @return A \code{\linkS4class{CiftiVolume}} object or NULL.
 #' @export
 setGeneric("volume_info", function(x, ...) standardGeneric("volume_info"))
+
+#' Extract Data for a Single Brain Structure
+#'
+#' Returns the sub-matrix corresponding to a specific brain structure
+#' from a CiftiImage.
+#'
+#' @param x A \code{\linkS4class{CiftiImage}} object.
+#' @param structure Character string naming the structure (e.g., "cortex_left").
+#' @param ... Additional arguments.
+#' @return A list with elements \code{data} (matrix), \code{axis} (subsetted axis),
+#'   and \code{indices} (column indices into the original data).
+#' @export
+setGeneric("extract_structure", function(x, structure, ...) standardGeneric("extract_structure"))

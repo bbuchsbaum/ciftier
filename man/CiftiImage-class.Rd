@@ -10,6 +10,10 @@
 \alias{cifti_intent,CiftiImage-method}
 \alias{cifti_data,CiftiImage-method}
 \alias{dim,CiftiImage-method}
+\alias{brain_models,CiftiImage-method}
+\alias{named_maps,CiftiImage-method}
+\alias{volume_info,CiftiImage-method}
+\alias{extract_structure,CiftiImage,character-method}
 \alias{[,CiftiImage,ANY,ANY-method}
 \title{CiftiImage Class}
 \usage{
@@ -27,6 +31,14 @@
 
 \S4method{dim}{CiftiImage}(x)
 
+\S4method{brain_models}{CiftiImage}(x, ...)
+
+\S4method{named_maps}{CiftiImage}(x, ...)
+
+\S4method{volume_info}{CiftiImage}(x, ...)
+
+\S4method{extract_structure}{CiftiImage,character}(x, structure, ...)
+
 \S4method{[}{CiftiImage,ANY,ANY}(x, i, j, ..., drop = FALSE)
 }
 \arguments{
@@ -35,6 +47,8 @@
 \item{x}{A \code{CiftiImage} object.}
 
 \item{...}{Additional arguments (ignored).}
+
+\item{structure}{Character string naming a brain structure (optional filter).}
 
 \item{i}{Row indices.}
 

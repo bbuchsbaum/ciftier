@@ -121,6 +121,87 @@ setMethod("dim", "CiftiImage", function(x) {
 
 
 # ============================================================================
+# brain_models(), named_maps(), volume_info()
+# ============================================================================
+
+#' @rdname CiftiImage-class
+#' @param structure Character string naming a brain structure (optional filter).
+#' @export
+setMethod("brain_models", "CiftiImage", function(x, ...) {
+  bms <- list()
+  for (mim in x@header@matrix@maps) {
+    if (mim@index_type == "CIFTI_INDEX_TYPE_BRAIN_MODELS") {
+      bms <- c(bms, mim@brain_models)
+    }
+  }
+  bms
+})
+
+#' @rdname CiftiImage-class
+#' @export
+setMethod("named_maps", "CiftiImage", function(x, ...) {
+  nms <- list()
+  for (mim in x@header@matrix@maps) {
+    if (mim@index_type %in% c("CIFTI_INDEX_TYPE_SCALARS",
+                               "CIFTI_INDEX_TYPE_LABELS")) {
+      nms <- c(nms, mim@named_maps)
+    }
+  }
+  nms
+})
+
+#' @rdname CiftiImage-class
+#' @export
+setMethod("volume_info", "CiftiImage", function(x, ...) {
+  for (mim in x@header@matrix@maps) {
+    if (!is.null(mim@volume)) return(mim@volume)
+  }
+  NULL
+})
+
+
+# ============================================================================
+# extract_structure()
+# ============================================================================
+
+#' @rdname CiftiImage-class
+#' @export
+setMethod("extract_structure", signature(x = "CiftiImage", structure = "character"),
+  function(x, structure, ...) {
+    structure <- to_cifti_structure_name(structure)
+    ca <- x@col_axis
+
+    if (is(ca, "BrainModelAxis")) {
+      idx <- which(ca@name == structure)
+      if (length(idx) == 0L) {
+        stop(sprintf("Structure '%s' not found in column axis", structure))
+      }
+      sub_axis <- ca[idx]
+      sub_data <- if (!is.null(x@data)) x@data[, idx, drop = FALSE] else NULL
+      list(data = sub_data, axis = sub_axis, indices = idx)
+    } else if (is(ca, "ParcelsAxis")) {
+      # For parcels, find parcels that contain the requested structure
+      hits <- integer(0)
+      for (i in seq_along(ca@vertices)) {
+        if (structure %in% names(ca@vertices[[i]])) {
+          hits <- c(hits, i)
+        }
+      }
+      # Also check voxel-based parcels by structure naming convention
+      if (length(hits) == 0L) {
+        stop(sprintf("Structure '%s' not found in parcels axis", structure))
+      }
+      sub_axis <- ca[hits]
+      sub_data <- if (!is.null(x@data)) x@data[, hits, drop = FALSE] else NULL
+      list(data = sub_data, axis = sub_axis, indices = hits)
+    } else {
+      stop("extract_structure requires a BrainModelAxis or ParcelsAxis column axis")
+    }
+  }
+)
+
+
+# ============================================================================
 # [ Subsetting
 # ============================================================================
 
