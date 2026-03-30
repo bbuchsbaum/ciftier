@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  r-cmd-check:
+    name: R CMD check
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+      R_KEEP_PKG_SOURCE: yes
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'
+          extra-packages: |
+            any::rcmdcheck
+            any::testthat
+
+      - name: Run R CMD check
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--no-manual", "--as-cran")'
+
+  external-compatibility:
+    name: External fixture compatibility
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+      CIFTIER_ONLINE_TESTS: "1"
+      CIFTIER_FIXTURE_CACHE_DIR: ${{ github.workspace }}/.cache/ciftier-fixtures
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Cache external CIFTI fixtures
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CIFTIER_FIXTURE_CACHE_DIR }}
+          key: ${{ runner.os }}-ciftier-fixtures-${{ hashFiles('tests/testthat/helper-external-fixtures.R') }}
+
+      - name: Install test dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'
+          extra-packages: any::testthat
+
+      - name: Run external compatibility tests
+        shell: Rscript {0}
+        run: testthat::test_local(filter = "external-fixtures", reporter = "summary")

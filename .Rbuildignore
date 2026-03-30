@@ -1,4 +1,6 @@
 ^\.omc$
+^\.cache$
 ^\.covr_result\.rds$
 ^ciftier\.Rproj$
 ^\.Rproj\.user$
+^\.github$
